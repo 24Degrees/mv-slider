@@ -16,13 +16,16 @@
  */
 
 if (!defined('ABSPATH')) {
-    die( 'You are not allowed to call this page directly.' );
+    die( 'Forbidden' );
 }
 
 if( !class_exists( 'MV_Slider' ) ) {
     class MV_Slider {
         function __construct() {
             $this->define_constants();
+            
+            require_once( MV_SLIDER_PATH . 'post-types\class.mv-slider-cpt.php' );
+            $MV_Slider_Post_Type = new MV_Slider_Post_Type();
         }    
 
         public function define_constants() {
@@ -32,12 +35,14 @@ if( !class_exists( 'MV_Slider' ) ) {
         }
 
         public static function activate() {
-            //flush_rewrite_rules();
-            update_option( 'rewrite_rules', '' );
+            /* need to flush rewrite rules to make sure that the custom post type is registered */
+            //flush_rewrite_rules(); //Does not works that good it seems
+            update_option( 'rewrite_rules', '' ); // works better than flush_rewrite_rules()
         }
 
         public static function deactivate() {
-
+            flush_rewrite_rules();
+            unregister_post_type( 'mv-slider');
         }
 
         public static function uninstall() {
